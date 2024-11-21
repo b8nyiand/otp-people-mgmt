@@ -1,3 +1,16 @@
 spring:
   application:
     name: peoplemgmt
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.SQLServerDialect
+    hibernate:
+      ddl-auto: none
+  datasource:
+    url: 'jdbc:sqlserver://localhost:11433;encrypt=true;trustServerCertificate=true;databaseName=DEVDB'
+    username: SA
+    password: Test1234
+  liquibase:
+    change-log: 'classpath:db/changelog/changelog-master.yml'
