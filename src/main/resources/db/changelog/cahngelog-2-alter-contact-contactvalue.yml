@@ -1,0 +1,9 @@
+databaseChangeLog:
+  -  changeSet:
+       id:  4
+       author:  András Nyilas
+       changes:
+         -  modifyDataType:
+              columnName:  contact_value
+              newDataType:  VARCHAR(600)
+              tableName:  contact
