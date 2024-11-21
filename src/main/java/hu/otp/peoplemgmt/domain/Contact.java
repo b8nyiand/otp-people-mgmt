@@ -16,8 +16,39 @@ public class Contact extends Audit {
     @Column(name="contact_value", length=600, nullable = false)
     private String contactValue;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="person_id", nullable=false)
     private Person personContact;
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getContactType() {
+        return contactType;
+    }
+
+    public void setContactType(String contactType) {
+        this.contactType = contactType;
+    }
+
+    public String getContactValue() {
+        return contactValue;
+    }
+
+    public void setContactValue(String contactValue) {
+        this.contactValue = contactValue;
+    }
+
+    public Person getPersonContact() {
+        return personContact;
+    }
+
+    public void setPersonContact(Person personContact) {
+        this.personContact = personContact;
+    }
 }

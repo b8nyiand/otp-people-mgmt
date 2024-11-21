@@ -10,7 +10,7 @@ public class Person extends Audit {
 
     @Id
     @Column(name="id", length=50, nullable = false)
-    private Long id;
+    private String id;
 
     @Column(name="first_name", length=250, nullable = false)
     private String firstName;
@@ -21,10 +21,57 @@ public class Person extends Audit {
     @Column(name="birth_date", nullable = false)
     private String birthDate;
 
-    @OneToMany(mappedBy="personAddress")
+    @OneToMany(mappedBy="personAddress", fetch = FetchType.LAZY)
     private Set<Address> addresses;
 
-    @OneToMany(mappedBy="personContact")
+    @OneToMany(mappedBy="personContact", fetch = FetchType.LAZY)
     private Set<Contact> contacts;
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(String birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    public Set<Address> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(Set<Address> addresses) {
+        this.addresses = addresses;
+    }
+
+    public Set<Contact> getContacts() {
+        return contacts;
+    }
+
+    public void setContacts(Set<Contact> contacts) {
+        this.contacts = contacts;
+    }
 }
