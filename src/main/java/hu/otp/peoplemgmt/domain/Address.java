@@ -4,11 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name="address")
-public class Address {
-
-    @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
-    private Long id;
+public class Address extends Audit {
 
     @Column(name="zipcode", length=20, nullable = false)
     private String zipcode;

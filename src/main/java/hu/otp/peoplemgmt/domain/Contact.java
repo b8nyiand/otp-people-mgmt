@@ -2,11 +2,7 @@ package hu.otp.peoplemgmt.domain;
 
 import jakarta.persistence.*;
 
-public class Contact {
-
-    @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
-    private Long id;
+public class Contact extends Audit {
 
     @Column(name="contact_type", length=100, nullable = false)
     private String contactType;

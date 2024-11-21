@@ -6,11 +6,7 @@ import java.util.Set;
 
 @Entity
 @Table(name="person")
-public class Person {
-
-    @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
-    private Long id;
+public class Person extends Audit {
 
     @Column(name="first_name", length=250, nullable = false)
     private String firstName;
