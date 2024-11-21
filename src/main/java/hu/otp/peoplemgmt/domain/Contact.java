@@ -2,6 +2,8 @@ package hu.otp.peoplemgmt.domain;
 
 import jakarta.persistence.*;
 
+@Entity
+@Table(name="contact")
 public class Contact extends Audit {
 
     @Column(name="contact_type", length=100, nullable = false)
