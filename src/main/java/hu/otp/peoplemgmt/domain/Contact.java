@@ -6,6 +6,10 @@ import jakarta.persistence.*;
 @Table(name="contact")
 public class Contact extends Audit {
 
+    @Id
+    @GeneratedValue(strategy= GenerationType.AUTO)
+    private Long id;
+
     @Column(name="contact_type", length=100, nullable = false)
     private String contactType;
 

@@ -9,10 +9,6 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 public class Audit {
 
-    @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
-    private Long id;
-
     @CreatedDate
     @Column(name="created_at", nullable = false)
     private LocalDateTime createdAt;

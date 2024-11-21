@@ -8,6 +8,10 @@ import java.util.Set;
 @Table(name="person")
 public class Person extends Audit {
 
+    @Id
+    @Column(name="id", length=50, nullable = false)
+    private Long id;
+
     @Column(name="first_name", length=250, nullable = false)
     private String firstName;
 

@@ -7,6 +7,10 @@ import jakarta.persistence.*;
 @Table(name="address")
 public class Address extends Audit {
 
+    @Id
+    @GeneratedValue(strategy= GenerationType.AUTO)
+    private Long id;
+
     @Column(name="zipcode", length=20, nullable = false)
     private String zipcode;
 
