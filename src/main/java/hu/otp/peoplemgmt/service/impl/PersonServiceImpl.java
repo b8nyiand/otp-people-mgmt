@@ -16,18 +16,22 @@ public class PersonServiceImpl implements PersonService {
     @Autowired
     private PersonRepository personRepository;
 
+    @Override
     public Person save(Person person) {
         return personRepository.save(person);
     }
 
+    @Override
     public void delete(Long id) {
         personRepository.deleteById(id);
     }
 
+    @Override
     public List<Person> listItems() {
         return personRepository.findAll();
     }
 
+    @Override
     public Person getOneItem(Long id) {
         if (personRepository.findById(id).isPresent()) {
             return personRepository.findById(id).get();

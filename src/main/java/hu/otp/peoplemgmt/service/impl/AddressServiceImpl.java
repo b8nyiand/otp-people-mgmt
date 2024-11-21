@@ -16,18 +16,22 @@ public class AddressServiceImpl implements AddressService {
     @Autowired
     private AddressRepository addressRepository;
 
+    @Override
     public Address save(Address address) {
         return addressRepository.save(address);
     }
 
+    @Override
     public void delete(Long id) {
         addressRepository.deleteById(id);
     }
 
+    @Override
     public List<Address> listItems() {
         return addressRepository.findAll();
     }
 
+    @Override
     public Address getOneItem(Long id) {
         if (addressRepository.findById(id).isPresent()) {
             return addressRepository.findById(id).get();
