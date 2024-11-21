@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 5
+      author: András Nyilas
+      changes:
+        - addColumn:
+            tableName: address
+            columns:
+              - column:
+                  name: type
+                  type: varchar(10)

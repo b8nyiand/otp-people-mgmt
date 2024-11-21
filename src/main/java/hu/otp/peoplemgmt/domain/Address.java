@@ -1,5 +1,6 @@
 package hu.otp.peoplemgmt.domain;
 
+import hu.otp.peoplemgmt.domain.enumeration.AddressType;
 import jakarta.persistence.*;
 
 @Entity
@@ -14,6 +15,10 @@ public class Address extends Audit {
 
     @Column(name="address_line", length=600, nullable = false)
     private String addressLine;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name="type")
+    private AddressType type;
 
     @ManyToOne
     @JoinColumn(name="person_id", nullable=false)
