@@ -13,8 +13,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  type: BIGINT
-                  autoIncrement: true
+                  type: VARCHAR(50)
                   constraints:
                     primaryKey: true
                     nullable: false
@@ -82,7 +81,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: person_id
-                  type: BIGINT
+                  type: VARCHAR(50)
                   constraints:
                     nullable: false
                     foreignKeyName: fk_address_person
@@ -133,7 +132,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: person_id
-                  type: BIGINT
+                  type: VARCHAR(50)
                   constraints:
                     nullable: false
                     foreignKeyName: fk_contact_person
