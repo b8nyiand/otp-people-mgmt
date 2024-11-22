@@ -3,6 +3,7 @@ package hu.otp.peoplemgmt.service.impl;
 import hu.otp.peoplemgmt.domain.Address;
 import hu.otp.peoplemgmt.domain.Person;
 import hu.otp.peoplemgmt.domain.dto.AddressDTO;
+import hu.otp.peoplemgmt.domain.enumeration.AddressType;
 import hu.otp.peoplemgmt.repository.AddressRepository;
 import hu.otp.peoplemgmt.repository.PersonRepository;
 import hu.otp.peoplemgmt.service.AddressService;
@@ -26,6 +27,10 @@ public class AddressServiceImpl implements AddressService {
     @Override
     @Transactional
     public Address save(AddressDTO addressDTO) {
+        if (addressDTO.getId() == null) {
+            validateAddress(addressDTO);
+        }
+
         Address entity = new Address();
         if (addressDTO.getId() != null) {
             entity = addressRepository.findById(addressDTO.getId())
@@ -33,6 +38,33 @@ public class AddressServiceImpl implements AddressService {
         }
 
         return addressRepository.save(toEntity(addressDTO, entity, personRepository));
+    }
+
+    private void validateAddress(AddressDTO addressDTO) {
+        String personId = addressDTO.getPersonId();
+        if (!personRepository.existsById(personId)) {
+            throw new IllegalArgumentException("Person with ID " + personId + " does not exist.");
+        }
+
+        List<Address> existingAddresses = addressRepository.findByPersonAddress_Id(personId);
+
+        boolean hasTemporary = existingAddresses.stream()
+                .anyMatch(address -> address.getType() == AddressType.TEMPORARY);
+
+        boolean hasContinous = existingAddresses.stream()
+                .anyMatch(address -> address.getType() == AddressType.CONTINOUS);
+
+        if (addressDTO.getType() == AddressType.TEMPORARY && hasTemporary) {
+            throw new IllegalArgumentException("Person with ID " + personId + " already has a temporary address.");
+        }
+
+        if (addressDTO.getType() == AddressType.CONTINOUS && hasContinous) {
+            throw new IllegalArgumentException("Person with ID " + personId + " already has a continous address.");
+        }
+
+        if (existingAddresses.size() == 2) {
+            throw new IllegalArgumentException("Person with ID " + personId + " already has both continous and temporary addresses.");
+        }
     }
 
     @Override
