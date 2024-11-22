@@ -19,6 +19,7 @@ public class PersonServiceImpl implements PersonService {
     private PersonRepository personRepository;
 
     @Override
+    @Transactional
     public Person save(PersonDTO personDto) {
         return personRepository.save(toEntity(personDto));
     }

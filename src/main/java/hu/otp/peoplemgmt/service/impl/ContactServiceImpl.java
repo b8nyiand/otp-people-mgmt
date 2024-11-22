@@ -24,6 +24,7 @@ public class ContactServiceImpl implements ContactService {
     private PersonRepository personRepository;
 
     @Override
+    @Transactional
     public Contact save(ContactDTO contactDto) {
         return contactRepository.save(toEntity(contactDto));
     }

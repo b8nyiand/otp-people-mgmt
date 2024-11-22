@@ -22,10 +22,10 @@ public class Person extends Audit {
     @Column(name="birth_date", nullable = false)
     private LocalDate birthDate;
 
-    @OneToMany(mappedBy="personAddress", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy="personAddress", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Address> addresses;
 
-    @OneToMany(mappedBy="personContact", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy="personContact", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Contact> contacts;
 
     public String getId() {

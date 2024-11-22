@@ -25,6 +25,7 @@ public class AddressServiceImpl implements AddressService {
     private PersonRepository personRepository;
 
     @Override
+    @Transactional
     public Address save(AddressDTO addressDto) {
         return addressRepository.save(toEntity(addressDto));
     }
