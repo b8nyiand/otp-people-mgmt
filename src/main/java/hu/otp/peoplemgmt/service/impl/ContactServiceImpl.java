@@ -47,10 +47,7 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     public ContactDTO getOneItem(Long id) {
-        if (contactRepository.findById(id).isPresent()) {
-            return toDto(contactRepository.findById(id).get());
-        }
-        return null;
+        return contactRepository.findById(id).map(this::toDto).orElse(null);
     }
 
     private ContactDTO toDto(Contact contact) {

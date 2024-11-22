@@ -37,4 +37,9 @@ public class AddressController {
         return ResponseEntity.ok(addressService.listItems());
     }
 
+    @GetMapping("/find/{id}")
+    public ResponseEntity<AddressDTO> findOne(@PathVariable Long id) {
+        return ResponseEntity.ok(addressService.getOneItem(id));
+    }
+
 }

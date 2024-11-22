@@ -37,4 +37,9 @@ public class PersonController {
         return ResponseEntity.ok(personService.listItems());
     }
 
+    @GetMapping("/find/{id}")
+    public ResponseEntity<PersonDTO> findOne(@PathVariable String id) {
+        return ResponseEntity.ok(personService.getOneItem(id));
+    }
+
 }

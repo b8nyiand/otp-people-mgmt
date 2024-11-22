@@ -79,10 +79,7 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public AddressDTO getOneItem(Long id) {
-        if (addressRepository.findById(id).isPresent()) {
-            return toDto(addressRepository.findById(id).get());
-        }
-        return null;
+        return addressRepository.findById(id).map(this::toDto).orElse(null);
     }
 
     private AddressDTO toDto(Address address) {

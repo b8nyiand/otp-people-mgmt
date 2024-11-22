@@ -38,10 +38,7 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public PersonDTO getOneItem(String id) {
-        if (personRepository.findById(id).isPresent()) {
-            return toDto(personRepository.findById(id).get());
-        }
-        return null;
+        return personRepository.findById(id).map(this::toDto).orElse(null);
     }
 
     private PersonDTO toDto(Person person) {

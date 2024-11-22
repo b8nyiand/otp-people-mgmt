@@ -37,4 +37,9 @@ public class ContactController {
         return ResponseEntity.ok(contactService.listItems());
     }
 
+    @GetMapping("/find/{id}")
+    public ResponseEntity<ContactDTO> findOne(@PathVariable Long id) {
+        return ResponseEntity.ok(contactService.getOneItem(id));
+    }
+
 }
