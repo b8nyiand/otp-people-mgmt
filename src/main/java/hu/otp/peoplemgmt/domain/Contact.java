@@ -1,6 +1,7 @@
 package hu.otp.peoplemgmt.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import hu.otp.peoplemgmt.domain.enumeration.ContactType;
 import jakarta.persistence.*;
 
 @Entity
@@ -11,8 +12,9 @@ public class Contact extends Audit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "contact_type", length = 100, nullable = false)
-    private String contactType;
+    private ContactType contactType;
 
     @Column(name = "contact_value", length = 600, nullable = false)
     private String contactValue;
