@@ -2,9 +2,6 @@ package hu.otp.peoplemgmt.domain.dto;
 
 import hu.otp.peoplemgmt.domain.enumeration.AddressType;
 
-import java.time.LocalDate;
-import java.util.Set;
-
 public class AddressDTO {
 
     private Long id;

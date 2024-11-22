@@ -6,26 +6,26 @@ import java.time.LocalDate;
 import java.util.Set;
 
 @Entity
-@Table(name="person")
+@Table(name = "person")
 public class Person extends Audit {
 
     @Id
-    @Column(name="id", length=50, nullable = false)
+    @Column(name = "id", length = 50, nullable = false)
     private String id;
 
-    @Column(name="first_name", length=250, nullable = false)
+    @Column(name = "first_name", length = 250, nullable = false)
     private String firstName;
 
-    @Column(name="last_name", length=250, nullable = false)
+    @Column(name = "last_name", length = 250, nullable = false)
     private String lastName;
 
-    @Column(name="birth_date", nullable = false)
+    @Column(name = "birth_date", nullable = false)
     private LocalDate birthDate;
 
-    @OneToMany(mappedBy="personAddress", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "personAddress", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Address> addresses;
 
-    @OneToMany(mappedBy="personContact", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "personContact", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Contact> contacts;
 
     public String getId() {

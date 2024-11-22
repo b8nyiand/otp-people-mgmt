@@ -5,20 +5,20 @@ import hu.otp.peoplemgmt.domain.enumeration.AddressType;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name="address")
+@Table(name = "address")
 public class Address extends Audit {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="zipcode", length=20, nullable = false)
+    @Column(name="zipcode", length = 20, nullable = false)
     private String zipcode;
 
-    @Column(name="city", length=250, nullable = false)
+    @Column(name="city", length = 250, nullable = false)
     private String city;
 
-    @Column(name="address_line", length=600, nullable = false)
+    @Column(name="address_line", length = 600, nullable = false)
     private String addressLine;
 
     @Enumerated(EnumType.STRING)
@@ -26,7 +26,7 @@ public class Address extends Audit {
     private AddressType type;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="person_id", nullable=false)
+    @JoinColumn(name = "person_id", nullable = false)
     @JsonIgnore
     private Person personAddress;
 

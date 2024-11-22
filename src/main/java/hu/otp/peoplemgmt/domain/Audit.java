@@ -12,15 +12,15 @@ import java.time.LocalDateTime;
 public class Audit {
 
     @CreatedDate
-    @Column(name="created_at", nullable = false)
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
     @LastModifiedDate
-    @Column(name="modified_at", nullable = false)
+    @Column(name = "modified_at", nullable = false)
     private LocalDateTime modifiedAt;
 
     @Version
-    @Column(name="version")
+    @Column(name = "version")
     private Long version;
 
     public LocalDateTime getCreatedAt() {
