@@ -1,10 +1,12 @@
 package hu.otp.peoplemgmt.domain.dto;
 
+import hu.otp.peoplemgmt.domain.enumeration.ContactType;
+
 public class ContactDTO {
 
     private Long id;
 
-    private String contactType;
+    private ContactType contactType;
 
     private String contactValue;
 
@@ -18,11 +20,11 @@ public class ContactDTO {
         this.id = id;
     }
 
-    public String getContactType() {
+    public ContactType getContactType() {
         return contactType;
     }
 
-    public void setContactType(String contactType) {
+    public void setContactType(ContactType contactType) {
         this.contactType = contactType;
     }
 
