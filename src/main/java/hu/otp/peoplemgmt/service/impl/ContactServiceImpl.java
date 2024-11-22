@@ -25,8 +25,14 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     @Transactional
-    public Contact save(ContactDTO contactDto) {
-        return contactRepository.save(toEntity(contactDto));
+    public Contact save(ContactDTO contactDTO) {
+        Contact entity = new Contact();
+        if (contactDTO.getId() != null) {
+            entity = contactRepository.findById(contactDTO.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Contact not found with ID: " + contactDTO.getId()));
+        }
+
+        return contactRepository.save(toEntity(contactDTO, entity, contactRepository));
     }
 
     @Override
@@ -56,15 +62,15 @@ public class ContactServiceImpl implements ContactService {
         return dto;
     }
 
-    private Contact toEntity(ContactDTO contactDto) {
-        Contact entity = new Contact();
-        entity.setId(contactDto.getId());
-        entity.setContactType(contactDto.getContactType());
-        entity.setContactValue(contactDto.getContactValue());
+    private Contact toEntity(ContactDTO contactDTO, Contact entity, ContactRepository contactRepository) {
+        entity.setContactType(contactDTO.getContactType());
+        entity.setContactValue(contactDTO.getContactValue());
 
-        Person person = personRepository.findById(contactDto.getPersonId()).orElseThrow(RuntimeException::new);
-
-        entity.setPersonContact(person);
+        if (contactDTO.getPersonId() != null) {
+            Person person = personRepository.findById(contactDTO.getPersonId())
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid person ID: " + contactDTO.getPersonId()));
+            entity.setPersonContact(person);
+        }
         return entity;
     }
 

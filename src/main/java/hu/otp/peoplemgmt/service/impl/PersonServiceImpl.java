@@ -21,7 +21,9 @@ public class PersonServiceImpl implements PersonService {
     @Override
     @Transactional
     public Person save(PersonDTO personDto) {
-        return personRepository.save(toEntity(personDto));
+        Person entity = personRepository.findById(personDto.getId())
+                .orElseGet(Person::new);
+        return personRepository.save(toEntity(personDto, entity));
     }
 
     @Override
@@ -51,8 +53,7 @@ public class PersonServiceImpl implements PersonService {
         return dto;
     }
 
-    private Person toEntity(PersonDTO personDTO) {
-        Person entity = new Person();
+    private Person toEntity(PersonDTO personDTO, Person entity) {
         entity.setId(personDTO.getId());
         entity.setFirstName(personDTO.getFirstName());
         entity.setLastName(personDTO.getLastName());

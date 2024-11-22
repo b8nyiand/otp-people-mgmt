@@ -1,5 +1,6 @@
 package hu.otp.peoplemgmt.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import hu.otp.peoplemgmt.domain.enumeration.AddressType;
 import jakarta.persistence.*;
 
@@ -8,7 +9,7 @@ import jakarta.persistence.*;
 public class Address extends Audit {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name="zipcode", length=20, nullable = false)
@@ -26,6 +27,7 @@ public class Address extends Audit {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="person_id", nullable=false)
+    @JsonIgnore
     private Person personAddress;
 
     public Long getId() {

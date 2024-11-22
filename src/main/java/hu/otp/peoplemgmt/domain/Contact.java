@@ -1,5 +1,6 @@
 package hu.otp.peoplemgmt.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -7,7 +8,7 @@ import jakarta.persistence.*;
 public class Contact extends Audit {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name="contact_type", length=100, nullable = false)
@@ -18,6 +19,7 @@ public class Contact extends Audit {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="person_id", nullable=false)
+    @JsonIgnore
     private Person personContact;
 
     public Long getId() {

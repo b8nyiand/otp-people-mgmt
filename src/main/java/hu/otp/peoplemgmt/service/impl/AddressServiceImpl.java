@@ -3,7 +3,6 @@ package hu.otp.peoplemgmt.service.impl;
 import hu.otp.peoplemgmt.domain.Address;
 import hu.otp.peoplemgmt.domain.Person;
 import hu.otp.peoplemgmt.domain.dto.AddressDTO;
-import hu.otp.peoplemgmt.domain.dto.PersonDTO;
 import hu.otp.peoplemgmt.repository.AddressRepository;
 import hu.otp.peoplemgmt.repository.PersonRepository;
 import hu.otp.peoplemgmt.service.AddressService;
@@ -26,8 +25,14 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     @Transactional
-    public Address save(AddressDTO addressDto) {
-        return addressRepository.save(toEntity(addressDto));
+    public Address save(AddressDTO addressDTO) {
+        Address entity = new Address();
+        if (addressDTO.getId() != null) {
+            entity = addressRepository.findById(addressDTO.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Address not found with ID: " + addressDTO.getId()));
+        }
+
+        return addressRepository.save(toEntity(addressDTO, entity, personRepository));
     }
 
     @Override
@@ -59,17 +64,17 @@ public class AddressServiceImpl implements AddressService {
         return dto;
     }
 
-    private Address toEntity(AddressDTO addressDTO) {
-        Address entity = new Address();
-        entity.setId(addressDTO.getId());
+    private Address toEntity(AddressDTO addressDTO, Address entity, PersonRepository personRepository) {
         entity.setZipcode(addressDTO.getZipcode());
         entity.setCity(addressDTO.getCity());
         entity.setAddressLine(addressDTO.getAddressLine());
         entity.setType(addressDTO.getType());
 
-        Person person = personRepository.findById(addressDTO.getPersonId()).orElseThrow(RuntimeException::new);
-
-        entity.setPersonAddress(person);
+        if (addressDTO.getPersonId() != null) {
+            Person person = personRepository.findById(addressDTO.getPersonId())
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid person ID: " + addressDTO.getPersonId()));
+            entity.setPersonAddress(person);
+        }
         return entity;
     }
 
