@@ -1,17 +1,18 @@
 package hu.otp.peoplemgmt.service;
 
 import hu.otp.peoplemgmt.domain.Address;
+import hu.otp.peoplemgmt.domain.dto.AddressDTO;
 
 import java.util.List;
 
 public interface AddressService {
 
-    Address save(Address address);
+    Address save(AddressDTO addressDto);
 
     void delete(Long id);
 
-    List<Address> listItems();
+    List<AddressDTO> listItems();
 
-    Address getOneItem(Long id);
+    AddressDTO getOneItem(Long id);
 
 }

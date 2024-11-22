@@ -1,17 +1,18 @@
 package hu.otp.peoplemgmt.service;
 
 import hu.otp.peoplemgmt.domain.Person;
+import hu.otp.peoplemgmt.domain.dto.PersonDTO;
 
 import java.util.List;
 
 public interface PersonService {
 
-    Person save(Person person);
+    Person save(PersonDTO personDto);
 
-    void delete(Long id);
+    void delete(String id);
 
-    List<Person> listItems();
+    List<PersonDTO> listItems();
 
-    Person getOneItem(Long id);
+    PersonDTO getOneItem(String id);
 
 }

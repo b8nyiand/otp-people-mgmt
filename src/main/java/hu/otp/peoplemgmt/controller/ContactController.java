@@ -1,6 +1,7 @@
 package hu.otp.peoplemgmt.controller;
 
 import hu.otp.peoplemgmt.domain.Contact;
+import hu.otp.peoplemgmt.domain.dto.ContactDTO;
 import hu.otp.peoplemgmt.service.ContactService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,13 +17,13 @@ public class ContactController {
     private ContactService contactService;
 
     @PostMapping("/add")
-    public ResponseEntity<Contact> addContact(@RequestBody Contact contact) {
-        return ResponseEntity.ok(contactService.save(contact));
+    public ResponseEntity<Contact> addContact(@RequestBody ContactDTO contactDto) {
+        return ResponseEntity.ok(contactService.save(contactDto));
     }
 
     @PutMapping("/update")
-    public ResponseEntity<Contact> updateContact(@RequestBody Contact contact) {
-        return ResponseEntity.ok(contactService.save(contact));
+    public ResponseEntity<Contact> updateContact(@RequestBody ContactDTO contactDto) {
+        return ResponseEntity.ok(contactService.save(contactDto));
     }
 
     @DeleteMapping("/delete/{id}")
@@ -32,7 +33,7 @@ public class ContactController {
     }
 
     @GetMapping("/list-items")
-    public ResponseEntity<List<Contact>> listContacts() {
+    public ResponseEntity<List<ContactDTO>> listContacts() {
         return ResponseEntity.ok(contactService.listItems());
     }
 

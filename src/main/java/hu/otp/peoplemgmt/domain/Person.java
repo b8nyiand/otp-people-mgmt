@@ -2,6 +2,7 @@ package hu.otp.peoplemgmt.domain;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 @Entity
@@ -19,7 +20,7 @@ public class Person extends Audit {
     private String lastName;
 
     @Column(name="birth_date", nullable = false)
-    private String birthDate;
+    private LocalDate birthDate;
 
     @OneToMany(mappedBy="personAddress", fetch = FetchType.LAZY)
     private Set<Address> addresses;
@@ -51,11 +52,11 @@ public class Person extends Audit {
         this.lastName = lastName;
     }
 
-    public String getBirthDate() {
+    public LocalDate getBirthDate() {
         return birthDate;
     }
 
-    public void setBirthDate(String birthDate) {
+    public void setBirthDate(LocalDate birthDate) {
         this.birthDate = birthDate;
     }
 

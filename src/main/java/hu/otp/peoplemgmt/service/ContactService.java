@@ -1,17 +1,18 @@
 package hu.otp.peoplemgmt.service;
 
 import hu.otp.peoplemgmt.domain.Contact;
+import hu.otp.peoplemgmt.domain.dto.ContactDTO;
 
 import java.util.List;
 
 public interface ContactService {
 
-    Contact save(Contact contact);
+    Contact save(ContactDTO contactDto);
 
     void delete(Long id);
 
-    List<Contact> listItems();
+    List<ContactDTO> listItems();
 
-    Contact getOneItem(Long id);
+    ContactDTO getOneItem(Long id);
 
 }

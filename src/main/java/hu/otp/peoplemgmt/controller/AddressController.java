@@ -1,6 +1,7 @@
 package hu.otp.peoplemgmt.controller;
 
 import hu.otp.peoplemgmt.domain.Address;
+import hu.otp.peoplemgmt.domain.dto.AddressDTO;
 import hu.otp.peoplemgmt.service.AddressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,13 +17,13 @@ public class AddressController {
     private AddressService addressService;
 
     @PostMapping("/add")
-    public ResponseEntity<Address> addAddress(@RequestBody Address address) {
-        return ResponseEntity.ok(addressService.save(address));
+    public ResponseEntity<Address> addAddress(@RequestBody AddressDTO addressDTO) {
+        return ResponseEntity.ok(addressService.save(addressDTO));
     }
 
     @PutMapping("/update")
-    public ResponseEntity<Address> updateAddress(@RequestBody Address address) {
-        return ResponseEntity.ok(addressService.save(address));
+    public ResponseEntity<Address> updateAddress(@RequestBody AddressDTO addressDto) {
+        return ResponseEntity.ok(addressService.save(addressDto));
     }
 
     @DeleteMapping("/delete/{id}")
@@ -32,7 +33,7 @@ public class AddressController {
     }
 
     @GetMapping("/list-items")
-    public ResponseEntity<List<Address>> listAddresses() {
+    public ResponseEntity<List<AddressDTO>> listAddresses() {
         return ResponseEntity.ok(addressService.listItems());
     }
 
