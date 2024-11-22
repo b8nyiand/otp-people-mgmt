@@ -3,10 +3,12 @@ package hu.otp.peoplemgmt.domain;
 import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
 @MappedSuperclass
+@EntityListeners(AuditingEntityListener.class)
 public class Audit {
 
     @CreatedDate
@@ -17,7 +19,7 @@ public class Audit {
     @Column(name="modified_at", nullable = false)
     private LocalDateTime modifiedAt;
 
-    @org.springframework.data.annotation.Version
+    @Version
     @Column(name="version")
     private Long version;
 
