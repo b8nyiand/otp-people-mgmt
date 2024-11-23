@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ContactService {
 
-    Contact save(ContactDTO contactDto);
+    ContactDTO save(ContactDTO contactDto);
 
     void delete(Long id);
 

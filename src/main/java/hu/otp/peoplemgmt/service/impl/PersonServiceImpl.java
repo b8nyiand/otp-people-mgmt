@@ -20,10 +20,10 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     @Transactional
-    public Person save(PersonDTO personDto) {
+    public PersonDTO save(PersonDTO personDto) {
         Person entity = personRepository.findById(personDto.getId())
                 .orElseGet(Person::new);
-        return personRepository.save(toEntity(personDto, entity));
+        return toDto(personRepository.save(toEntity(personDto, entity)));
     }
 
     @Override

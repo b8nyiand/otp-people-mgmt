@@ -25,14 +25,14 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     @Transactional
-    public Contact save(ContactDTO contactDTO) {
+    public ContactDTO save(ContactDTO contactDTO) {
         Contact entity = new Contact();
         if (contactDTO.getId() != null) {
             entity = contactRepository.findById(contactDTO.getId())
                     .orElseThrow(() -> new IllegalArgumentException("Contact not found with ID: " + contactDTO.getId()));
         }
 
-        return contactRepository.save(toEntity(contactDTO, entity, contactRepository));
+        return toDto(contactRepository.save(toEntity(contactDTO, entity, contactRepository)));
     }
 
     @Override

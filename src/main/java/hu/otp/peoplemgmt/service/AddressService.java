@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface AddressService {
 
-    Address save(AddressDTO addressDto);
+    AddressDTO save(AddressDTO addressDto);
 
     void delete(Long id);
 

@@ -17,12 +17,12 @@ public class ContactController {
     private ContactService contactService;
 
     @PostMapping("/add")
-    public ResponseEntity<Contact> addContact(@RequestBody ContactDTO contactDto) {
+    public ResponseEntity<ContactDTO> addContact(@RequestBody ContactDTO contactDto) {
         return ResponseEntity.ok(contactService.save(contactDto));
     }
 
     @PutMapping("/update")
-    public ResponseEntity<Contact> updateContact(@RequestBody ContactDTO contactDto) {
+    public ResponseEntity<ContactDTO> updateContact(@RequestBody ContactDTO contactDto) {
         return ResponseEntity.ok(contactService.save(contactDto));
     }
 

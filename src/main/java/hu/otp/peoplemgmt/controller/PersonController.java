@@ -17,12 +17,12 @@ public class PersonController {
     private PersonService personService;
 
     @PostMapping("/add")
-    public ResponseEntity<Person> addPerson(@RequestBody PersonDTO personDto) {
+    public ResponseEntity<PersonDTO> addPerson(@RequestBody PersonDTO personDto) {
         return ResponseEntity.ok(personService.save(personDto));
     }
 
     @PutMapping("/update")
-    public ResponseEntity<Person> updatePerson(@RequestBody PersonDTO personDto) {
+    public ResponseEntity<PersonDTO> updatePerson(@RequestBody PersonDTO personDto) {
         return ResponseEntity.ok(personService.save(personDto));
     }
 

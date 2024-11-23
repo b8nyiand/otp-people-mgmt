@@ -51,9 +51,10 @@ public class ContactServiceTest {
 
         Contact savedContact = new Contact();
         savedContact.setId(1L);
+        savedContact.setPersonContact(person);
         when(contactRepository.save(any(Contact.class))).thenReturn(savedContact);
 
-        Contact result = contactService.save(contactDTO);
+        ContactDTO result = contactService.save(contactDTO);
 
         assertThat(result.getId()).isEqualTo(1L);
         verify(contactRepository, times(1)).save(any(Contact.class));
@@ -66,20 +67,26 @@ public class ContactServiceTest {
         contactDTO.setContactType(ContactType.TELEPHONE);
         contactDTO.setContactValue("+36301234567");
 
+        Person person = new Person();
+        person.setId("jkovacs");
+        when(personRepository.findById("jkovacs")).thenReturn(Optional.of(person));
+
         Contact existingContact = new Contact();
         existingContact.setId(1L);
         existingContact.setContactType(ContactType.EMAIL);
         existingContact.setContactValue("test@test.com");
+        existingContact.setPersonContact(person);
         when(contactRepository.findById(1L)).thenReturn(Optional.of(existingContact));
 
         Contact updatedContact = new Contact();
         updatedContact.setId(1L);
         updatedContact.setContactType(ContactType.TELEPHONE);
+        updatedContact.setPersonContact(person);
         updatedContact.setContactValue("+36301234567");
 
         when(contactRepository.save(any(Contact.class))).thenReturn(updatedContact);
 
-        Contact result = contactService.save(contactDTO);
+        ContactDTO result = contactService.save(contactDTO);
 
         assertThat(result.getContactValue()).isEqualTo("+36301234567");
         assertThat(result.getContactType()).isEqualTo(ContactType.TELEPHONE);

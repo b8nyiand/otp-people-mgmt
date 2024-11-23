@@ -26,7 +26,7 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     @Transactional
-    public Address save(AddressDTO addressDTO) {
+    public AddressDTO save(AddressDTO addressDTO) {
         if (addressDTO.getId() == null) {
             validateAddress(addressDTO);
         }
@@ -37,7 +37,7 @@ public class AddressServiceImpl implements AddressService {
                     .orElseThrow(() -> new IllegalArgumentException("Address not found with ID: " + addressDTO.getId()));
         }
 
-        return addressRepository.save(toEntity(addressDTO, entity, personRepository));
+        return toDto(addressRepository.save(toEntity(addressDTO, entity, personRepository)));
     }
 
     private void validateAddress(AddressDTO addressDTO) {

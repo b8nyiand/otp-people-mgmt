@@ -17,12 +17,12 @@ public class AddressController {
     private AddressService addressService;
 
     @PostMapping("/add")
-    public ResponseEntity<Address> addAddress(@RequestBody AddressDTO addressDTO) {
+    public ResponseEntity<AddressDTO> addAddress(@RequestBody AddressDTO addressDTO) {
         return ResponseEntity.ok(addressService.save(addressDTO));
     }
 
     @PutMapping("/update")
-    public ResponseEntity<Address> updateAddress(@RequestBody AddressDTO addressDto) {
+    public ResponseEntity<AddressDTO> updateAddress(@RequestBody AddressDTO addressDto) {
         return ResponseEntity.ok(addressService.save(addressDto));
     }
 

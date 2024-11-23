@@ -54,9 +54,10 @@ public class AddressServiceTest {
 
         Address savedAddress = new Address();
         savedAddress.setId(1L);
+        savedAddress.setPersonAddress(person);
         when(addressRepository.save(any(Address.class))).thenReturn(savedAddress);
 
-        Address result = addressService.save(addressDTO);
+        AddressDTO result = addressService.save(addressDTO);
 
         assertThat(result.getId()).isEqualTo(1L);
         verify(addressRepository, times(1)).save(any(Address.class));
@@ -70,18 +71,25 @@ public class AddressServiceTest {
         addressDTO.setCity("Test2");
         addressDTO.setAddressLine("Test2 utca 123");
         addressDTO.setType(AddressType.TEMPORARY);
+        addressDTO.setPersonId("jkovacs");
+
+        Person person = new Person();
+        person.setId("jkovacs");
+        when(personRepository.findById("jkovacs")).thenReturn(Optional.of(person));
 
         Address existingAddress = new Address();
         existingAddress.setId(1L);
+        existingAddress.setPersonAddress(person);
         when(addressRepository.findById(1L)).thenReturn(Optional.of(existingAddress));
 
         Address updatedAddress = new Address();
         updatedAddress.setId(1L);
         updatedAddress.setCity("Test2");
+        updatedAddress.setPersonAddress(person);
 
         when(addressRepository.save(any(Address.class))).thenReturn(updatedAddress);
 
-        Address result = addressService.save(addressDTO);
+        AddressDTO result = addressService.save(addressDTO);
 
         assertThat(result.getCity()).isEqualTo("Test2");
 

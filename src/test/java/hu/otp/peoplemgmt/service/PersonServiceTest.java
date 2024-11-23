@@ -41,7 +41,7 @@ public class PersonServiceTest {
 
         when(personRepository.save(any(Person.class))).thenReturn(savedPerson);
 
-        Person result = personService.save(personDTO);
+        PersonDTO result = personService.save(personDTO);
 
         assertThat(result.getId()).isEqualTo("jkovacs");
         verify(personRepository, times(1)).save(any(Person.class));
@@ -62,7 +62,7 @@ public class PersonServiceTest {
         when(personRepository.findById("akovacs")).thenReturn(Optional.of(existingPerson));
         when(personRepository.save(any(Person.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        Person updatedPerson = personService.save(personDTO);
+        PersonDTO updatedPerson = personService.save(personDTO);
 
         assertThat(updatedPerson.getId()).isEqualTo("akovacs");
         assertThat(updatedPerson.getFirstName()).isEqualTo("Antonia");
