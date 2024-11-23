@@ -3,7 +3,6 @@ package hu.otp.peoplemgmt.repository;
 import hu.otp.peoplemgmt.domain.Address;
 import hu.otp.peoplemgmt.domain.Person;
 import hu.otp.peoplemgmt.domain.enumeration.AddressType;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -23,21 +22,19 @@ public class AddressRepositoryTest {
     private PersonRepository personRepository;
 
     @Test
-    @DisplayName("Test findByPersonAddress_Id with matching personId")
-    void testFindByPersonAddress_Id() {
+    void testFindByPersonAddressId() {
         Person person = new Person();
         person.setId("ptest");
         person.setFirstName("Test");
         person.setLastName("P");
         person.setBirthDate(LocalDate.now());
 
-
         personRepository.save(person);
 
         Address address = new Address();
         address.setZipcode("12345");
         address.setCity("Test");
-        address.setAddressLine("Test Street 123");
+        address.setAddressLine("Test utca 123");
         address.setType(AddressType.CONTINOUS);
         address.setPersonAddress(person);
 
@@ -47,13 +44,12 @@ public class AddressRepositoryTest {
 
         assertThat(result).isNotEmpty();
         assertThat(result.get(0).getCity()).isEqualTo("Test");
-        assertThat(result.get(0).getAddressLine()).isEqualTo("Test Street 123");
+        assertThat(result.get(0).getAddressLine()).isEqualTo("Test utca 123");
         assertThat(result.get(0).getType()).isEqualTo(AddressType.CONTINOUS);
     }
 
     @Test
-    @DisplayName("Test findByPersonAddress_Id with non-existing personId")
-    void testFindByPersonAddress_Id_NotFound() {
+    void testFindByPersonAddressIdNotFound() {
         List<Address> result = addressRepository.findByPersonAddress_Id("999");
         assertThat(result).isEmpty();
     }
