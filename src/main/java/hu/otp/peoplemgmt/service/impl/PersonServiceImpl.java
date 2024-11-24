@@ -6,6 +6,8 @@ import hu.otp.peoplemgmt.repository.PersonRepository;
 import hu.otp.peoplemgmt.service.PersonService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,8 @@ import java.util.stream.Collectors;
 @Transactional
 public class PersonServiceImpl implements PersonService {
 
+    private static final Logger logger = LogManager.getLogger(PersonServiceImpl.class);
+
     /**
      * The repository of Persons.
      */
@@ -32,9 +36,15 @@ public class PersonServiceImpl implements PersonService {
     @Override
     @Transactional
     public PersonDTO save(PersonDTO personDto) {
+        logger.info("Saving person: {}", personDto);
+
         Person entity = personRepository.findById(personDto.getId())
                 .orElseGet(Person::new);
-        return toDto(personRepository.save(toEntity(personDto, entity)));
+
+        PersonDTO savedPerson = toDto(personRepository.save(toEntity(personDto, entity)));
+        logger.debug("Person saved successfully: {}", savedPerson);
+
+        return savedPerson;
     }
 
     /**
@@ -43,10 +53,15 @@ public class PersonServiceImpl implements PersonService {
     @Override
     @Transactional
     public void delete(String id) {
+        logger.info("Deleting person with ID: {}", id);
+
         if (!personRepository.existsById(id)) {
+            logger.error("Person not found with ID: {}", id);
             throw new EntityNotFoundException("Person not found with ID: " + id);
         }
+
         personRepository.deleteById(id);
+        logger.debug("Person with ID {} deleted successfully", id);
     }
 
     /**
@@ -55,7 +70,16 @@ public class PersonServiceImpl implements PersonService {
     @Override
     @Transactional
     public List<PersonDTO> listItems() {
-        return personRepository.findAll().stream().map(this::toDto).collect(Collectors.toList());
+        logger.info("Fetching all persons");
+
+        List<PersonDTO> persons = personRepository.findAll()
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+
+        logger.debug("Persons retrieved: {}", persons);
+
+        return persons;
     }
 
     /**
@@ -64,12 +88,23 @@ public class PersonServiceImpl implements PersonService {
     @Override
     @Transactional
     public PersonDTO getOneItem(String id) {
-        return personRepository.findById(id).map(this::toDto)
-                .orElseThrow(() -> new EntityNotFoundException("Person not found with ID: " + id));
+        logger.info("Fetching person with ID: {}", id);
+
+        PersonDTO person = personRepository.findById(id)
+                .map(this::toDto)
+                .orElseThrow(() -> {
+                    logger.error("Person not found with ID: {}", id);
+                    return new EntityNotFoundException("Person not found with ID: " + id);
+                });
+
+        logger.debug("Person retrieved: {}", person);
+
+        return person;
     }
 
     /**
      * Maps a Person entity to DTO.
+     *
      * @param person the entity to map to DTO
      * @return a DTO mapped from the Person entity
      */
@@ -84,8 +119,9 @@ public class PersonServiceImpl implements PersonService {
 
     /**
      * Maps a PersonDTO to a Person entity.
+     *
      * @param personDTO the DTO to map to entity
-     * @param entity the Person entity
+     * @param entity    the Person entity
      * @return an entity mapped from the given PersonDTO
      */
     private Person toEntity(PersonDTO personDTO, Person entity) {
