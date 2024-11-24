@@ -24,19 +24,19 @@ public class ContactController {
     @Autowired
     private ContactService contactService;
 
-    @Operation(summary = "Create a Contact", description = "Creates a new Contact of a Person from a ContactDTO and saves to the database.")
+    @Operation(summary = "Create a Contact", description = "Creates a new Contact of a Person from a ContactDTO and saves it.")
     @PostMapping("/add")
     public ResponseEntity<ContactDTO> addContact(@RequestBody ContactDTO contactDto) {
         return ResponseEntity.ok(contactService.save(contactDto));
     }
 
-    @Operation(summary = "Update a Contact", description = "Updates a Contact of a Person from a ContactDTO and saves to the database.")
+    @Operation(summary = "Update a Contact", description = "Updates a Contact of a Person from a ContactDTO and saves it.")
     @PutMapping("/update")
     public ResponseEntity<ContactDTO> updateContact(@RequestBody ContactDTO contactDto) {
         return ResponseEntity.ok(contactService.save(contactDto));
     }
 
-    @Operation(summary = "Delete a Contact", description = "Deletes a Contact from the database. Warning: deletion is physical, not logical!")
+    @Operation(summary = "Delete a Contact", description = "Deletes a Contact. Warning: deletion is physical, not logical!")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteContact(
             @Parameter(description = "ID of the Contact to delete", required = true)
@@ -46,13 +46,13 @@ public class ContactController {
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "List Contacts", description = "Gets all Contacts from the database as a list.")
+    @Operation(summary = "List Contacts", description = "Gets all Contacts as a list.")
     @GetMapping("/list-items")
     public ResponseEntity<List<ContactDTO>> listContacts() {
         return ResponseEntity.ok(contactService.listItems());
     }
 
-    @Operation(summary = "Get one Contact", description = "Gets exactly one Contact from the database by the given ID.")
+    @Operation(summary = "Get one Contact", description = "Gets exactly one Contact by the given ID.")
     @GetMapping("/find/{id}")
     public ResponseEntity<ContactDTO> findOne(
             @Parameter(description = "ID of the Contact to get", required = true)

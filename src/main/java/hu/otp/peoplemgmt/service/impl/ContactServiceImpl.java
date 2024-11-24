@@ -13,16 +13,29 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Implementation of ContactService.
+ * @author Andras Nyilas
+ */
 @Service
 @Transactional
 public class ContactServiceImpl implements ContactService {
 
+    /**
+     * The repository of Contacts.
+     */
     @Autowired
     private ContactRepository contactRepository;
 
+    /**
+     * The repository of Persons.
+     */
     @Autowired
     private PersonRepository personRepository;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
     public ContactDTO save(ContactDTO contactDTO) {
@@ -32,24 +45,38 @@ public class ContactServiceImpl implements ContactService {
                     .orElseThrow(() -> new IllegalArgumentException("Contact not found with ID: " + contactDTO.getId()));
         }
 
-        return toDto(contactRepository.save(toEntity(contactDTO, entity, contactRepository)));
+        return toDto(contactRepository.save(toEntity(contactDTO, entity)));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void delete(Long id) {
         contactRepository.deleteById(id);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<ContactDTO> listItems() {
         return contactRepository.findAll().stream().map(this::toDto).collect(Collectors.toList());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ContactDTO getOneItem(Long id) {
         return contactRepository.findById(id).map(this::toDto).orElse(null);
     }
 
+    /**
+     * Maps a Contact entity to DTO.
+     * @param contact the entity to map to DTO
+     * @return a DTO mapped from the Contact entity
+     */
     private ContactDTO toDto(Contact contact) {
         ContactDTO dto = new ContactDTO();
         dto.setId(contact.getId());
@@ -59,7 +86,13 @@ public class ContactServiceImpl implements ContactService {
         return dto;
     }
 
-    private Contact toEntity(ContactDTO contactDTO, Contact entity, ContactRepository contactRepository) {
+    /**
+     * Maps a ContactDTO to a Contact entity.
+     * @param contactDTO the DTO to map to entity
+     * @param entity the Contact entity
+     * @return an entity mapped from the given ContactDTO
+     */
+    private Contact toEntity(ContactDTO contactDTO, Contact entity) {
         entity.setContactType(contactDTO.getContactType());
         entity.setContactValue(contactDTO.getContactValue());
 

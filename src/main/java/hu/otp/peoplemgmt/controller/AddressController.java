@@ -24,19 +24,19 @@ public class AddressController {
     @Autowired
     private AddressService addressService;
 
-    @Operation(summary = "Create an Address", description = "Creates a new Address of a Person from an AddressDTO and saves to the database.")
+    @Operation(summary = "Create an Address", description = "Creates a new Address of a Person from an AddressDTO and saves it.")
     @PostMapping("/add")
     public ResponseEntity<AddressDTO> addAddress(@RequestBody AddressDTO addressDTO) {
         return ResponseEntity.ok(addressService.save(addressDTO));
     }
 
-    @Operation(summary = "Update an Address", description = "Updates an Address of a Person from an AddressDTO and saves to the database.")
+    @Operation(summary = "Update an Address", description = "Updates an Address of a Person from an AddressDTO and saves it.")
     @PutMapping("/update")
     public ResponseEntity<AddressDTO> updateAddress(@RequestBody AddressDTO addressDto) {
         return ResponseEntity.ok(addressService.save(addressDto));
     }
 
-    @Operation(summary = "Delete an Address", description = "Deletes an Address from the database. Warning: deletion is physical, not logical!")
+    @Operation(summary = "Delete an Address", description = "Deletes an Address. Warning: deletion is physical, not logical!")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteAddress(
             @Parameter(description = "ID of the Address to delete", required = true)
@@ -46,13 +46,13 @@ public class AddressController {
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "List Addresses", description = "Gets all Addresses of Persons from the database as a list.")
+    @Operation(summary = "List Addresses", description = "Gets all Addresses of Persons as a list.")
     @GetMapping("/list-items")
     public ResponseEntity<List<AddressDTO>> listAddresses() {
         return ResponseEntity.ok(addressService.listItems());
     }
 
-    @Operation(summary = "Get one Address", description = "Gets exactly one Address of a Person from the database by the given ID.")
+    @Operation(summary = "Get one Address", description = "Gets exactly one Address of a Person by the given ID.")
     @GetMapping("/find/{id}")
     public ResponseEntity<AddressDTO> findOne(
             @Parameter(description = "ID of the Address to get", required = true)

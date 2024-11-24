@@ -14,16 +14,29 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Implementation of AddressService.
+ * @author Andras Nyilas
+ */
 @Service
 @Transactional
 public class AddressServiceImpl implements AddressService {
 
+    /**
+     * The repository of Addresses.
+     */
     @Autowired
     private AddressRepository addressRepository;
 
+    /**
+     * The repository of Persons.
+     */
     @Autowired
     private PersonRepository personRepository;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
     public AddressDTO save(AddressDTO addressDTO) {
@@ -37,9 +50,13 @@ public class AddressServiceImpl implements AddressService {
                     .orElseThrow(() -> new IllegalArgumentException("Address not found with ID: " + addressDTO.getId()));
         }
 
-        return toDto(addressRepository.save(toEntity(addressDTO, entity, personRepository)));
+        return toDto(addressRepository.save(toEntity(addressDTO, entity)));
     }
 
+    /**
+     * Validates if the address we are trying to save is correct.
+     * @param addressDTO the AddressDTO to verify
+     */
     private void validateAddress(AddressDTO addressDTO) {
         String personId = addressDTO.getPersonId();
         if (!personRepository.existsById(personId)) {
@@ -67,21 +84,35 @@ public class AddressServiceImpl implements AddressService {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void delete(Long id) {
         addressRepository.deleteById(id);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<AddressDTO> listItems() {
         return addressRepository.findAll().stream().map(this::toDto).collect(Collectors.toList());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public AddressDTO getOneItem(Long id) {
         return addressRepository.findById(id).map(this::toDto).orElse(null);
     }
 
+    /**
+     * Maps an Address entity to DTO.
+     * @param address the entity to map to DTO
+     * @return a DTO mapped from the Address entity
+     */
     private AddressDTO toDto(Address address) {
         AddressDTO dto = new AddressDTO();
         dto.setId(address.getId());
@@ -93,7 +124,13 @@ public class AddressServiceImpl implements AddressService {
         return dto;
     }
 
-    private Address toEntity(AddressDTO addressDTO, Address entity, PersonRepository personRepository) {
+    /**
+     * Maps an AddressDTO to an Address entity.
+     * @param addressDTO the DTO to map to entity
+     * @param entity the Address entity
+     * @return an entity mapped from the given AddressDTO
+     */
+    private Address toEntity(AddressDTO addressDTO, Address entity) {
         entity.setZipcode(addressDTO.getZipcode());
         entity.setCity(addressDTO.getCity());
         entity.setAddressLine(addressDTO.getAddressLine());
