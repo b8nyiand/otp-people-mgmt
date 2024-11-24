@@ -1,5 +1,6 @@
 package hu.otp.peoplemgmt.exception;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
@@ -48,6 +49,23 @@ public class GlobalExceptionHandler {
                 String.format("Path: %s, Error: %s", request.getRequestURI(), e.getMessage())
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * Handles EntityNotFoundException and returns a structured error response with HTTP status 404 (Internal Server Error).
+     *
+     * @param e the EntityNotFoundException that was thrown.
+     * @param request the HttpServletRequest associated with the exception.
+     * @return a ResponseEntity containing an ErrorResponse and HTTP status 404.
+     */
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleEntityNotFoundException(RuntimeException e, HttpServletRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                LocalDateTime.now(),
+                "Entity with the given ID was not found.",
+                String.format("Path: %s, Error: %s", request.getRequestURI(), e.getMessage())
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
     /**

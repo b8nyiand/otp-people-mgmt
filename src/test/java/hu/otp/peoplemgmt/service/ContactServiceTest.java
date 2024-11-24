@@ -7,6 +7,7 @@ import hu.otp.peoplemgmt.domain.enumeration.ContactType;
 import hu.otp.peoplemgmt.repository.ContactRepository;
 import hu.otp.peoplemgmt.repository.PersonRepository;
 import hu.otp.peoplemgmt.service.impl.ContactServiceImpl;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -108,9 +110,25 @@ public class ContactServiceTest {
 
     @Test
     void testDelete() {
-        contactService.delete(1L);
+        Long existingId = 1L;
+        when(contactRepository.existsById(1L)).thenReturn(true);
 
-        verify(contactRepository, times(1)).deleteById(1L);
+        contactService.delete(existingId);
+
+        verify(contactRepository, times(1)).deleteById(existingId);
+    }
+
+    @Test
+    void testDeleteNotFound() {
+        Long nonExistentId = 1L;
+        when(contactRepository.existsById(nonExistentId)).thenReturn(false);
+
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
+            contactService.delete(nonExistentId);
+        });
+
+        assertEquals("Contact not found with ID: " + nonExistentId, exception.getMessage());
+        verify(contactRepository, never()).deleteById(anyLong());
     }
 
     @Test
@@ -150,11 +168,16 @@ public class ContactServiceTest {
     }
 
     @Test
-    void testGetOneItemNullIfNotFound() {
-        when(contactRepository.findById(1L)).thenReturn(Optional.empty());
+    void testOneItemNotFound() {
+        Long nonExistentId = 1L;
+        when(contactRepository.findById(nonExistentId)).thenReturn(Optional.empty());
 
-        ContactDTO result = contactService.getOneItem(1L);
-        assertThat(result).isNull();
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
+            contactService.getOneItem(nonExistentId);
+        });
+
+        assertEquals("Contact not found with ID: " + nonExistentId, exception.getMessage());
+        verify(contactRepository, times(1)).findById(nonExistentId);
     }
 
 }

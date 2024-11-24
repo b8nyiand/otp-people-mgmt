@@ -4,6 +4,7 @@ import hu.otp.peoplemgmt.domain.Person;
 import hu.otp.peoplemgmt.domain.dto.PersonDTO;
 import hu.otp.peoplemgmt.repository.PersonRepository;
 import hu.otp.peoplemgmt.service.PersonService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,6 +43,9 @@ public class PersonServiceImpl implements PersonService {
     @Override
     @Transactional
     public void delete(String id) {
+        if (!personRepository.existsById(id)) {
+            throw new EntityNotFoundException("Person not found with ID: " + id);
+        }
         personRepository.deleteById(id);
     }
 
@@ -60,7 +64,8 @@ public class PersonServiceImpl implements PersonService {
     @Override
     @Transactional
     public PersonDTO getOneItem(String id) {
-        return personRepository.findById(id).map(this::toDto).orElse(null);
+        return personRepository.findById(id).map(this::toDto)
+                .orElseThrow(() -> new EntityNotFoundException("Person not found with ID: " + id));
     }
 
     /**

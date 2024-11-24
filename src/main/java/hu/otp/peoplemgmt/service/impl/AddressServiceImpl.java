@@ -7,8 +7,11 @@ import hu.otp.peoplemgmt.domain.enumeration.AddressType;
 import hu.otp.peoplemgmt.repository.AddressRepository;
 import hu.otp.peoplemgmt.repository.PersonRepository;
 import hu.otp.peoplemgmt.service.AddressService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -92,6 +95,9 @@ public class AddressServiceImpl implements AddressService {
     @Override
     @Transactional
     public void delete(Long id) {
+        if (!addressRepository.existsById(id)) {
+            throw new EntityNotFoundException("Address not found with ID: " + id);
+        }
         addressRepository.deleteById(id);
     }
 
@@ -110,7 +116,8 @@ public class AddressServiceImpl implements AddressService {
     @Override
     @Transactional
     public AddressDTO getOneItem(Long id) {
-        return addressRepository.findById(id).map(this::toDto).orElse(null);
+        return addressRepository.findById(id).map(this::toDto)
+                .orElseThrow(() -> new EntityNotFoundException("Address not found with ID: " + id));
     }
 
     /**

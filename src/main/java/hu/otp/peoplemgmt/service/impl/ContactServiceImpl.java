@@ -6,6 +6,7 @@ import hu.otp.peoplemgmt.domain.dto.ContactDTO;
 import hu.otp.peoplemgmt.repository.ContactRepository;
 import hu.otp.peoplemgmt.repository.PersonRepository;
 import hu.otp.peoplemgmt.service.ContactService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -54,6 +55,9 @@ public class ContactServiceImpl implements ContactService {
     @Override
     @Transactional
     public void delete(Long id) {
+        if (!contactRepository.existsById(id)) {
+            throw new EntityNotFoundException("Contact not found with ID: " + id);
+        }
         contactRepository.deleteById(id);
     }
 
@@ -72,7 +76,8 @@ public class ContactServiceImpl implements ContactService {
     @Override
     @Transactional
     public ContactDTO getOneItem(Long id) {
-        return contactRepository.findById(id).map(this::toDto).orElse(null);
+        return contactRepository.findById(id).map(this::toDto)
+                .orElseThrow(() -> new EntityNotFoundException("Contact not found with ID: " + id));
     }
 
     /**

@@ -4,6 +4,7 @@ import hu.otp.peoplemgmt.domain.Person;
 import hu.otp.peoplemgmt.domain.dto.PersonDTO;
 import hu.otp.peoplemgmt.repository.PersonRepository;
 import hu.otp.peoplemgmt.service.impl.PersonServiceImpl;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -14,6 +15,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 public class PersonServiceTest {
@@ -74,8 +77,25 @@ public class PersonServiceTest {
 
     @Test
     void testDelete() {
-        personService.delete("jkovacs");
-        verify(personRepository, times(1)).deleteById("jkovacs");
+        String existingId = "jkovacs";
+        when(personRepository.existsById(existingId)).thenReturn(true);
+
+        personService.delete(existingId);
+
+        verify(personRepository, times(1)).deleteById(existingId);
+    }
+
+    @Test
+    void testDeleteNotFound() {
+        String nonExistentId = "invalid";
+        when(personRepository.existsById(nonExistentId)).thenReturn(false);
+
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
+            personService.delete(nonExistentId);
+        });
+
+        assertEquals("Person not found with ID: " + nonExistentId, exception.getMessage());
+        verify(personRepository, never()).deleteById(anyString());
     }
 
     @Test
@@ -105,10 +125,16 @@ public class PersonServiceTest {
     }
 
     @Test
-    void testGetOneItemNullIfNotFound() {
-        when(personRepository.findById("jkovacs")).thenReturn(Optional.empty());
-        PersonDTO result = personService.getOneItem("jkovacs");
-        assertThat(result).isNull();
+    void testOneItemNotFound() {
+        String nonExistentId = "invalid";
+        when(personRepository.findById(nonExistentId)).thenReturn(Optional.empty());
+
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
+            personService.getOneItem(nonExistentId);
+        });
+
+        assertEquals("Person not found with ID: " + nonExistentId, exception.getMessage());
+        verify(personRepository, times(1)).findById(nonExistentId);
     }
 
 }
