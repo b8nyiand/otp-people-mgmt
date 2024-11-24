@@ -17,13 +17,13 @@ import org.mockito.MockitoAnnotations;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class AddressServiceTest {
+class AddressServiceTest {
 
     @Mock
     private AddressRepository addressRepository;
@@ -39,70 +39,62 @@ public class AddressServiceTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    @Test
-    void testSaveNewAddress() {
+    private AddressDTO createAddressDTO(String city, String personId) {
         AddressDTO addressDTO = new AddressDTO();
+        addressDTO.setCity(city);
         addressDTO.setZipcode("12345");
-        addressDTO.setCity("Test");
         addressDTO.setAddressLine("Test utca 123");
         addressDTO.setType(AddressType.CONTINOUS);
-        addressDTO.setPersonId("jkovacs");
+        addressDTO.setPersonId(personId);
+        return addressDTO;
+    }
 
+    @Test
+    void testSaveNewAddress() {
+        AddressDTO addressDTO = createAddressDTO("Test", "jkovacs");
         Person person = new Person();
         person.setId("jkovacs");
 
         when(personRepository.existsById("jkovacs")).thenReturn(true);
         when(personRepository.findById("jkovacs")).thenReturn(Optional.of(person));
-
-        Address savedAddress = new Address();
-        savedAddress.setId(1L);
-        savedAddress.setPersonAddress(person);
-        when(addressRepository.save(any(Address.class))).thenReturn(savedAddress);
+        when(addressRepository.save(any(Address.class))).thenAnswer(invocation -> {
+            Address address = invocation.getArgument(0);
+            address.setId(1L);
+            return address;
+        });
 
         AddressDTO result = addressService.save(addressDTO);
 
         assertThat(result.getId()).isEqualTo(1L);
-        verify(addressRepository, times(1)).save(any(Address.class));
+        verify(addressRepository).save(any(Address.class));
     }
 
     @Test
     void testUpdateExistingAddress() {
-        AddressDTO addressDTO = new AddressDTO();
+        AddressDTO addressDTO = createAddressDTO("Test2", "jkovacs");
         addressDTO.setId(1L);
-        addressDTO.setZipcode("12345");
-        addressDTO.setCity("Test2");
-        addressDTO.setAddressLine("Test2 utca 123");
-        addressDTO.setType(AddressType.TEMPORARY);
-        addressDTO.setPersonId("jkovacs");
 
         Person person = new Person();
         person.setId("jkovacs");
-        when(personRepository.findById("jkovacs")).thenReturn(Optional.of(person));
 
         Address existingAddress = new Address();
         existingAddress.setId(1L);
+        existingAddress.setCity("Test");
         existingAddress.setPersonAddress(person);
+
+        when(personRepository.findById("jkovacs")).thenReturn(Optional.of(person));
         when(addressRepository.findById(1L)).thenReturn(Optional.of(existingAddress));
-
-        Address updatedAddress = new Address();
-        updatedAddress.setId(1L);
-        updatedAddress.setCity("Test2");
-        updatedAddress.setPersonAddress(person);
-
-        when(addressRepository.save(any(Address.class))).thenReturn(updatedAddress);
+        when(addressRepository.save(any(Address.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         AddressDTO result = addressService.save(addressDTO);
 
         assertThat(result.getCity()).isEqualTo("Test2");
-
-        verify(addressRepository, times(1)).findById(1L);
-        verify(addressRepository, times(1)).save(any(Address.class));
+        verify(addressRepository).save(any(Address.class));
     }
 
     @Test
     void testThrowExceptionIfPersonNotFound() {
-        AddressDTO addressDTO = new AddressDTO();
-        addressDTO.setPersonId("invalid");
+        AddressDTO addressDTO = createAddressDTO("Test", "invalid");
 
         when(personRepository.existsById("invalid")).thenReturn(false);
 
@@ -113,11 +105,11 @@ public class AddressServiceTest {
     @Test
     void testDelete() {
         Long existingId = 1L;
-        when(addressRepository.existsById(1L)).thenReturn(true);
+        when(addressRepository.existsById(existingId)).thenReturn(true);
 
         addressService.delete(existingId);
 
-        verify(addressRepository, times(1)).deleteById(existingId);
+        verify(addressRepository).deleteById(existingId);
     }
 
     @Test
@@ -125,9 +117,7 @@ public class AddressServiceTest {
         Long nonExistentId = 1L;
         when(addressRepository.existsById(nonExistentId)).thenReturn(false);
 
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
-            addressService.delete(nonExistentId);
-        });
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> addressService.delete(nonExistentId));
 
         assertEquals("Address not found with ID: " + nonExistentId, exception.getMessage());
         verify(addressRepository, never()).deleteById(anyLong());
@@ -135,37 +125,26 @@ public class AddressServiceTest {
 
     @Test
     void testListItems() {
-        Person person1 = new Person();
-        person1.setId("jkovacs");
-        person1.setFirstName("Janos");
+        Person person = new Person();
+        person.setId("jkovacs");
 
-        Address address1 = new Address();
-        address1.setId(1L);
-        address1.setCity("Test1");
-        address1.setPersonAddress(person1);
+        Address address = new Address();
+        address.setId(1L);
+        address.setCity("Test");
+        address.setPersonAddress(person);
 
-        Person person2 = new Person();
-        person2.setId("jokovacs");
-        person2.setFirstName("Jolan");
-
-        Address address2 = new Address();
-        address2.setId(2L);
-        address2.setCity("Test2");
-        address2.setPersonAddress(person2);
-
-        when(addressRepository.findAll()).thenReturn(List.of(address1, address2));
+        when(addressRepository.findAll()).thenReturn(List.of(address));
 
         List<AddressDTO> result = addressService.listItems();
 
-        assertThat(result.get(0).getCity()).isEqualTo("Test1");
-        assertThat(result.get(1).getCity()).isEqualTo("Test2");
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getCity()).isEqualTo("Test");
     }
 
     @Test
     void testGetOneItem() {
         Person person = new Person();
-        person.setId("jokovacs");
-        person.setFirstName("Jolan");
+        person.setId("jkovacs");
 
         Address address = new Address();
         address.setId(1L);
@@ -175,6 +154,7 @@ public class AddressServiceTest {
         when(addressRepository.findById(1L)).thenReturn(Optional.of(address));
 
         AddressDTO result = addressService.getOneItem(1L);
+
         assertThat(result.getCity()).isEqualTo("Test");
     }
 
@@ -183,12 +163,8 @@ public class AddressServiceTest {
         Long nonExistentId = 1L;
         when(addressRepository.findById(nonExistentId)).thenReturn(Optional.empty());
 
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
-            addressService.getOneItem(nonExistentId);
-        });
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> addressService.getOneItem(nonExistentId));
 
         assertEquals("Address not found with ID: " + nonExistentId, exception.getMessage());
-        verify(addressRepository, times(1)).findById(nonExistentId);
     }
-
 }

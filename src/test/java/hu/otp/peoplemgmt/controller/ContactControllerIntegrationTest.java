@@ -32,22 +32,33 @@ class ContactControllerIntegrationTest extends AbstractIntegrationTest {
     @Autowired
     private PersonRepository personRepository;
 
-    @Test
-    @Order(1)
-    void testAddContact() {
-        ContactDTO contactDTO = new ContactDTO();
-        contactDTO.setContactType(ContactType.TELEPHONE);
-        contactDTO.setContactValue("+123456789");
-        contactDTO.setPersonId("jkovacs");
+    private static final String BASE_URL = "/contact";
+    private static final String TEST_PERSON_ID = "jkovacs";
 
+    private Person createTestPerson() {
         Person person = new Person();
-        person.setId("jkovacs");
+        person.setId(TEST_PERSON_ID);
         person.setFirstName("Janos");
         person.setLastName("Kovacs");
         person.setBirthDate(LocalDate.of(1990, 1, 1));
-        personRepository.save(person);
+        return personRepository.save(person);
+    }
 
-        ResponseEntity<Contact> response = restTemplate.postForEntity("/contact/add", contactDTO, Contact.class);
+    private ContactDTO createTestContactDTO() {
+        ContactDTO contactDTO = new ContactDTO();
+        contactDTO.setContactType(ContactType.TELEPHONE);
+        contactDTO.setContactValue("+123456789");
+        contactDTO.setPersonId(TEST_PERSON_ID);
+        return contactDTO;
+    }
+
+    @Test
+    @Order(1)
+    void testAddContact() {
+        createTestPerson();
+        ContactDTO contactDTO = createTestContactDTO();
+
+        ResponseEntity<Contact> response = restTemplate.postForEntity(BASE_URL + "/add", contactDTO, Contact.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
@@ -59,18 +70,24 @@ class ContactControllerIntegrationTest extends AbstractIntegrationTest {
         updatedContact.setId(1L);
         updatedContact.setContactValue("+987654321");
         updatedContact.setContactType(ContactType.TELEPHONE);
-        updatedContact.setPersonId("jkovacs");
+        updatedContact.setPersonId(TEST_PERSON_ID);
 
-        ResponseEntity<ContactDTO> response = restTemplate.exchange("/contact/update", HttpMethod.PUT, new HttpEntity<>(updatedContact), ContactDTO.class);
+        ResponseEntity<ContactDTO> response = restTemplate.exchange(
+                BASE_URL + "/update",
+                HttpMethod.PUT,
+                new HttpEntity<>(updatedContact),
+                ContactDTO.class
+        );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getContactValue()).isEqualTo("+987654321");
     }
 
     @Test
     @Order(3)
     void testListContacts() {
-        ResponseEntity<List> response = restTemplate.getForEntity("/contact/list-items", List.class);
+        ResponseEntity<List> response = restTemplate.getForEntity(BASE_URL + "/list-items", List.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotEmpty();
@@ -79,7 +96,7 @@ class ContactControllerIntegrationTest extends AbstractIntegrationTest {
     @Test
     @Order(4)
     void testFindContactsByPersonId() {
-        ResponseEntity<List> response = restTemplate.getForEntity("/contact/person/jkovacs", List.class);
+        ResponseEntity<List> response = restTemplate.getForEntity(BASE_URL + "/person/" + TEST_PERSON_ID, List.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotEmpty();
@@ -88,9 +105,9 @@ class ContactControllerIntegrationTest extends AbstractIntegrationTest {
     @Test
     @Order(5)
     void testDeleteContact() {
-        restTemplate.delete("/contact/delete/1");
+        restTemplate.delete(BASE_URL + "/delete/1");
 
-        ResponseEntity<ContactDTO> response = restTemplate.getForEntity("/contact/find/1", ContactDTO.class);
+        ResponseEntity<ContactDTO> response = restTemplate.getForEntity(BASE_URL + "/find/1", ContactDTO.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }

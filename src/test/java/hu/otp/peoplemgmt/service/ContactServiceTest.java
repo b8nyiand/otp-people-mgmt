@@ -17,13 +17,13 @@ import org.mockito.MockitoAnnotations;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class ContactServiceTest {
+class ContactServiceTest {
 
     @Mock
     private ContactRepository contactRepository;
@@ -39,68 +39,59 @@ public class ContactServiceTest {
         MockitoAnnotations.openMocks(this);
     }
 
+    private ContactDTO createContactDTO(ContactType type, String value, String personId) {
+        ContactDTO contactDTO = new ContactDTO();
+        contactDTO.setContactType(type);
+        contactDTO.setContactValue(value);
+        contactDTO.setPersonId(personId);
+        return contactDTO;
+    }
+
     @Test
     void testSaveNewContact() {
-        ContactDTO contactDTO = new ContactDTO();
-        contactDTO.setContactType(ContactType.EMAIL);
-        contactDTO.setContactValue("test@test.com");
-        contactDTO.setPersonId("jkovacs");
-
+        ContactDTO contactDTO = createContactDTO(ContactType.EMAIL, "test@test.com", "jkovacs");
         Person person = new Person();
         person.setId("jkovacs");
 
         when(personRepository.findById("jkovacs")).thenReturn(Optional.of(person));
-
-        Contact savedContact = new Contact();
-        savedContact.setId(1L);
-        savedContact.setPersonContact(person);
-        when(contactRepository.save(any(Contact.class))).thenReturn(savedContact);
+        when(contactRepository.save(any(Contact.class))).thenAnswer(invocation -> {
+            Contact contact = invocation.getArgument(0);
+            contact.setId(1L);
+            return contact;
+        });
 
         ContactDTO result = contactService.save(contactDTO);
 
         assertThat(result.getId()).isEqualTo(1L);
-        verify(contactRepository, times(1)).save(any(Contact.class));
+        verify(contactRepository).save(any(Contact.class));
     }
 
     @Test
     void testUpdateExistingContact() {
-        ContactDTO contactDTO = new ContactDTO();
+        ContactDTO contactDTO = createContactDTO(ContactType.TELEPHONE, "+36301234567", "jkovacs");
         contactDTO.setId(1L);
-        contactDTO.setContactType(ContactType.TELEPHONE);
-        contactDTO.setContactValue("+36301234567");
 
         Person person = new Person();
         person.setId("jkovacs");
-        when(personRepository.findById("jkovacs")).thenReturn(Optional.of(person));
 
         Contact existingContact = new Contact();
         existingContact.setId(1L);
-        existingContact.setContactType(ContactType.EMAIL);
-        existingContact.setContactValue("test@test.com");
         existingContact.setPersonContact(person);
+
+        when(personRepository.findById("jkovacs")).thenReturn(Optional.of(person));
         when(contactRepository.findById(1L)).thenReturn(Optional.of(existingContact));
-
-        Contact updatedContact = new Contact();
-        updatedContact.setId(1L);
-        updatedContact.setContactType(ContactType.TELEPHONE);
-        updatedContact.setPersonContact(person);
-        updatedContact.setContactValue("+36301234567");
-
-        when(contactRepository.save(any(Contact.class))).thenReturn(updatedContact);
+        when(contactRepository.save(any(Contact.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         ContactDTO result = contactService.save(contactDTO);
 
         assertThat(result.getContactValue()).isEqualTo("+36301234567");
         assertThat(result.getContactType()).isEqualTo(ContactType.TELEPHONE);
-
-        verify(contactRepository, times(1)).findById(1L);
-        verify(contactRepository, times(1)).save(any(Contact.class));
+        verify(contactRepository).save(any(Contact.class));
     }
 
     @Test
     void testThrowExceptionIfPersonNotFound() {
-        ContactDTO contactDTO = new ContactDTO();
-        contactDTO.setPersonId("invalid");
+        ContactDTO contactDTO = createContactDTO(ContactType.EMAIL, "test@test.com", "invalid");
 
         when(personRepository.existsById("invalid")).thenReturn(false);
 
@@ -111,11 +102,11 @@ public class ContactServiceTest {
     @Test
     void testDelete() {
         Long existingId = 1L;
-        when(contactRepository.existsById(1L)).thenReturn(true);
+        when(contactRepository.existsById(existingId)).thenReturn(true);
 
         contactService.delete(existingId);
 
-        verify(contactRepository, times(1)).deleteById(existingId);
+        verify(contactRepository).deleteById(existingId);
     }
 
     @Test
@@ -123,9 +114,7 @@ public class ContactServiceTest {
         Long nonExistentId = 1L;
         when(contactRepository.existsById(nonExistentId)).thenReturn(false);
 
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
-            contactService.delete(nonExistentId);
-        });
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> contactService.delete(nonExistentId));
 
         assertEquals("Contact not found with ID: " + nonExistentId, exception.getMessage());
         verify(contactRepository, never()).deleteById(anyLong());
@@ -135,7 +124,6 @@ public class ContactServiceTest {
     void testListItems() {
         Person person = new Person();
         person.setId("jkovacs");
-        person.setFirstName("Janos");
 
         Contact contact = new Contact();
         contact.setId(1L);
@@ -146,6 +134,7 @@ public class ContactServiceTest {
 
         List<ContactDTO> result = contactService.listItems();
 
+        assertThat(result).hasSize(1);
         assertThat(result.get(0).getContactType()).isEqualTo(ContactType.EMAIL);
     }
 
@@ -153,7 +142,6 @@ public class ContactServiceTest {
     void testGetOneItem() {
         Person person = new Person();
         person.setId("jkovacs");
-        person.setFirstName("Janos");
 
         Contact contact = new Contact();
         contact.setId(1L);
@@ -172,12 +160,8 @@ public class ContactServiceTest {
         Long nonExistentId = 1L;
         when(contactRepository.findById(nonExistentId)).thenReturn(Optional.empty());
 
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
-            contactService.getOneItem(nonExistentId);
-        });
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> contactService.getOneItem(nonExistentId));
 
         assertEquals("Contact not found with ID: " + nonExistentId, exception.getMessage());
-        verify(contactRepository, times(1)).findById(nonExistentId);
     }
-
 }

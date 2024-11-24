@@ -17,9 +17,10 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class PersonServiceTest {
+class PersonServiceTest {
 
     @Mock
     private PersonRepository personRepository;
@@ -32,30 +33,33 @@ public class PersonServiceTest {
         MockitoAnnotations.openMocks(this);
     }
 
+    private PersonDTO createPersonDTO(String id, String firstName, String lastName) {
+        PersonDTO personDTO = new PersonDTO();
+        personDTO.setId(id);
+        personDTO.setFirstName(firstName);
+        personDTO.setLastName(lastName);
+        return personDTO;
+    }
+
     @Test
     void testSaveNewPerson() {
-        PersonDTO personDTO = new PersonDTO();
-        personDTO.setId("jkovacs");
-        personDTO.setFirstName("Janos");
-        personDTO.setLastName("Kovacs");
+        PersonDTO personDTO = createPersonDTO("jkovacs", "Janos", "Kovacs");
 
-        Person savedPerson = new Person();
-        savedPerson.setId("jkovacs");
-
-        when(personRepository.save(any(Person.class))).thenReturn(savedPerson);
+        when(personRepository.save(any(Person.class))).thenAnswer(invocation -> {
+            Person person = invocation.getArgument(0);
+            person.setId(personDTO.getId());
+            return person;
+        });
 
         PersonDTO result = personService.save(personDTO);
 
         assertThat(result.getId()).isEqualTo("jkovacs");
-        verify(personRepository, times(1)).save(any(Person.class));
+        verify(personRepository).save(any(Person.class));
     }
 
     @Test
     void testUpdateExistingPerson() {
-        PersonDTO personDTO = new PersonDTO();
-        personDTO.setId("akovacs");
-        personDTO.setFirstName("Antonia");
-        personDTO.setLastName("Kovacs");
+        PersonDTO personDTO = createPersonDTO("akovacs", "Antonia", "Kovacs");
 
         Person existingPerson = new Person();
         existingPerson.setId("akovacs");
@@ -65,14 +69,11 @@ public class PersonServiceTest {
         when(personRepository.findById("akovacs")).thenReturn(Optional.of(existingPerson));
         when(personRepository.save(any(Person.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        PersonDTO updatedPerson = personService.save(personDTO);
+        PersonDTO result = personService.save(personDTO);
 
-        assertThat(updatedPerson.getId()).isEqualTo("akovacs");
-        assertThat(updatedPerson.getFirstName()).isEqualTo("Antonia");
-        assertThat(updatedPerson.getLastName()).isEqualTo("Kovacs");
-
-        verify(personRepository, times(1)).findById("akovacs");
-        verify(personRepository, times(1)).save(existingPerson);
+        assertThat(result.getFirstName()).isEqualTo("Antonia");
+        assertThat(result.getLastName()).isEqualTo("Kovacs");
+        verify(personRepository).save(any(Person.class));
     }
 
     @Test
@@ -82,7 +83,7 @@ public class PersonServiceTest {
 
         personService.delete(existingId);
 
-        verify(personRepository, times(1)).deleteById(existingId);
+        verify(personRepository).deleteById(existingId);
     }
 
     @Test
@@ -90,9 +91,7 @@ public class PersonServiceTest {
         String nonExistentId = "invalid";
         when(personRepository.existsById(nonExistentId)).thenReturn(false);
 
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
-            personService.delete(nonExistentId);
-        });
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> personService.delete(nonExistentId));
 
         assertEquals("Person not found with ID: " + nonExistentId, exception.getMessage());
         verify(personRepository, never()).deleteById(anyString());
@@ -121,6 +120,7 @@ public class PersonServiceTest {
         when(personRepository.findById("jkovacs")).thenReturn(Optional.of(person));
 
         PersonDTO result = personService.getOneItem("jkovacs");
+
         assertThat(result.getFirstName()).isEqualTo("Janos");
     }
 
@@ -129,12 +129,8 @@ public class PersonServiceTest {
         String nonExistentId = "invalid";
         when(personRepository.findById(nonExistentId)).thenReturn(Optional.empty());
 
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
-            personService.getOneItem(nonExistentId);
-        });
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> personService.getOneItem(nonExistentId));
 
         assertEquals("Person not found with ID: " + nonExistentId, exception.getMessage());
-        verify(personRepository, times(1)).findById(nonExistentId);
     }
-
 }

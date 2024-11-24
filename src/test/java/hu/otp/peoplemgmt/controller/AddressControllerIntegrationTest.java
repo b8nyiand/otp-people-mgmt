@@ -32,24 +32,35 @@ class AddressControllerIntegrationTest extends AbstractIntegrationTest {
     @Autowired
     private PersonRepository personRepository;
 
-    @Test
-    @Order(1)
-    void testAddAddress() {
+    private static final String BASE_URL = "/address";
+    private static final String TEST_PERSON_ID = "jkovacs";
+
+    private Person createTestPerson() {
+        Person person = new Person();
+        person.setId(TEST_PERSON_ID);
+        person.setFirstName("Janos");
+        person.setLastName("Kovacs");
+        person.setBirthDate(LocalDate.of(1990, 1, 1));
+        return personRepository.save(person);
+    }
+
+    private AddressDTO createTestAddressDTO() {
         AddressDTO addressDTO = new AddressDTO();
         addressDTO.setZipcode("12345");
         addressDTO.setCity("Test");
         addressDTO.setAddressLine("Test utca 123");
         addressDTO.setType(AddressType.CONTINOUS);
-        addressDTO.setPersonId("jkovacs");
+        addressDTO.setPersonId(TEST_PERSON_ID);
+        return addressDTO;
+    }
 
-        Person person = new Person();
-        person.setId("jkovacs");
-        person.setFirstName("Janos");
-        person.setLastName("Kovacs");
-        person.setBirthDate(LocalDate.of(1990, 1, 1));
-        personRepository.save(person);
+    @Test
+    @Order(1)
+    void testAddAddress() {
+        createTestPerson();
+        AddressDTO addressDTO = createTestAddressDTO();
 
-        ResponseEntity<Address> response = restTemplate.postForEntity("/address/add", addressDTO, Address.class);
+        ResponseEntity<Address> response = restTemplate.postForEntity(BASE_URL + "/add", addressDTO, Address.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
@@ -64,16 +75,22 @@ class AddressControllerIntegrationTest extends AbstractIntegrationTest {
         updatedAddress.setAddressLine("Test2 utca 123");
         updatedAddress.setType(AddressType.CONTINOUS);
 
-        ResponseEntity<AddressDTO> response = restTemplate.exchange("/address/update", HttpMethod.PUT, new HttpEntity<>(updatedAddress), AddressDTO.class);
+        ResponseEntity<AddressDTO> response = restTemplate.exchange(
+                BASE_URL + "/update",
+                HttpMethod.PUT,
+                new HttpEntity<>(updatedAddress),
+                AddressDTO.class
+        );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getCity()).isEqualTo("Test2");
     }
 
     @Test
     @Order(3)
     void testListAddresses() {
-        ResponseEntity<List> response = restTemplate.getForEntity("/address/list-items", List.class);
+        ResponseEntity<List> response = restTemplate.getForEntity(BASE_URL + "/list-items", List.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotEmpty();
@@ -82,7 +99,7 @@ class AddressControllerIntegrationTest extends AbstractIntegrationTest {
     @Test
     @Order(4)
     void testFindAddressesByPersonId() {
-        ResponseEntity<List> response = restTemplate.getForEntity("/address/person/jkovacs", List.class);
+        ResponseEntity<List> response = restTemplate.getForEntity(BASE_URL + "/person/" + TEST_PERSON_ID, List.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotEmpty();
@@ -91,11 +108,10 @@ class AddressControllerIntegrationTest extends AbstractIntegrationTest {
     @Test
     @Order(5)
     void testDeleteAddress() {
-        restTemplate.delete("/address/delete/1");
+        restTemplate.delete(BASE_URL + "/delete/1");
 
-        ResponseEntity<AddressDTO> response = restTemplate.getForEntity("/address/find/1", AddressDTO.class);
+        ResponseEntity<AddressDTO> response = restTemplate.getForEntity(BASE_URL + "/find/1", AddressDTO.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
-
 }

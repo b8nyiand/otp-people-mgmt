@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class PersonControllerIntegrationTest extends AbstractIntegrationTest {
+class PersonControllerIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     private TestRestTemplate restTemplate;
@@ -29,40 +29,51 @@ public class PersonControllerIntegrationTest extends AbstractIntegrationTest {
     @Autowired
     private DataSource dataSource;
 
+    private static final String BASE_URL = "/person";
+    private static final String TEST_PERSON_ID = "jkovacs";
+
+    private PersonDTO createTestPersonDTO(String firstName, String lastName) {
+        PersonDTO personDTO = new PersonDTO();
+        personDTO.setId(TEST_PERSON_ID);
+        personDTO.setFirstName(firstName);
+        personDTO.setLastName(lastName);
+        personDTO.setBirthDate(LocalDate.of(1990, 1, 1));
+        return personDTO;
+    }
+
     @Test
     @Order(1)
     void testAddPerson() {
-        PersonDTO newPerson = new PersonDTO();
-        newPerson.setId("jkovacs");
-        newPerson.setFirstName("Janos");
-        newPerson.setLastName("Kovacs");
-        newPerson.setBirthDate(LocalDate.of(1990, 1, 1));
+        PersonDTO newPerson = createTestPersonDTO("Janos", "Kovacs");
 
-        ResponseEntity<PersonDTO> response = restTemplate.postForEntity("/person/add", newPerson, PersonDTO.class);
+        ResponseEntity<PersonDTO> response = restTemplate.postForEntity(BASE_URL + "/add", newPerson, PersonDTO.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getId()).isEqualTo("jkovacs");
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getId()).isEqualTo(TEST_PERSON_ID);
     }
 
     @Test
     @Order(2)
     void testUpdatePerson() {
-        PersonDTO updatedPerson = new PersonDTO();
-        updatedPerson.setId("jkovacs");
-        updatedPerson.setFirstName("Jolan");
-        updatedPerson.setLastName("Kovacs");
-        updatedPerson.setBirthDate(LocalDate.of(1990, 1, 1));
+        PersonDTO updatedPerson = createTestPersonDTO("Jolan", "Kovacs");
 
-        ResponseEntity<PersonDTO> response = restTemplate.exchange("/person/update", HttpMethod.PUT, new HttpEntity<>(updatedPerson), PersonDTO.class);
+        ResponseEntity<PersonDTO> response = restTemplate.exchange(
+                BASE_URL + "/update",
+                HttpMethod.PUT,
+                new HttpEntity<>(updatedPerson),
+                PersonDTO.class
+        );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getFirstName()).isEqualTo("Jolan");
     }
 
     @Test
     @Order(3)
     void testListPersons() {
-        ResponseEntity<List> response = restTemplate.getForEntity("/person/list-items", List.class);
+        ResponseEntity<List> response = restTemplate.getForEntity(BASE_URL + "/list-items", List.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotEmpty();
@@ -71,11 +82,10 @@ public class PersonControllerIntegrationTest extends AbstractIntegrationTest {
     @Test
     @Order(4)
     void testDeletePerson() {
-        restTemplate.delete("/person/delete/jkovacs");
+        restTemplate.delete(BASE_URL + "/delete/" + TEST_PERSON_ID);
 
-        ResponseEntity<PersonDTO> response = restTemplate.getForEntity("/person/find/jkovacs", PersonDTO.class);
+        ResponseEntity<PersonDTO> response = restTemplate.getForEntity(BASE_URL + "/find/" + TEST_PERSON_ID, PersonDTO.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
-
 }
