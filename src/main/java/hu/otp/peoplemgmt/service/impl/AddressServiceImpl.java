@@ -48,6 +48,8 @@ public class AddressServiceImpl implements AddressService {
         if (addressDTO.getId() != null) {
             entity = addressRepository.findById(addressDTO.getId())
                     .orElseThrow(() -> new IllegalArgumentException("Address not found with ID: " + addressDTO.getId()));
+
+            addressDTO.setType(entity.getType());
         }
 
         return toDto(addressRepository.save(toEntity(addressDTO, entity)));
