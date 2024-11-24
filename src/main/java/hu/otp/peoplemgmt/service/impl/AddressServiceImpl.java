@@ -88,6 +88,7 @@ public class AddressServiceImpl implements AddressService {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     public void delete(Long id) {
         addressRepository.deleteById(id);
     }
@@ -96,6 +97,7 @@ public class AddressServiceImpl implements AddressService {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     public List<AddressDTO> listItems() {
         return addressRepository.findAll().stream().map(this::toDto).collect(Collectors.toList());
     }
@@ -104,8 +106,21 @@ public class AddressServiceImpl implements AddressService {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     public AddressDTO getOneItem(Long id) {
         return addressRepository.findById(id).map(this::toDto).orElse(null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public List<AddressDTO> findByPersonId(String personId) {
+        return addressRepository.findByPersonAddress_Id(personId)
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
     }
 
     /**

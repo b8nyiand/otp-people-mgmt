@@ -61,4 +61,13 @@ public class ContactController {
         return ResponseEntity.ok(contactService.getOneItem(id));
     }
 
+    @Operation(summary = "Find Contacts by Person ID", description = "Retrieves a list of Contacts belonging to a specific Person.")
+    @GetMapping("/person/{personId}")
+    public ResponseEntity<List<ContactDTO>> getContactsByPersonId(
+            @Parameter(description = "ID of the Person whose Contacts are to be retrieved", required = true)
+            @PathVariable String personId
+    ) {
+        return ResponseEntity.ok(contactService.findByPersonId(personId));
+    }
+
 }

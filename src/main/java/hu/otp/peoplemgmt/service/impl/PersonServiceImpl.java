@@ -40,6 +40,7 @@ public class PersonServiceImpl implements PersonService {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     public void delete(String id) {
         personRepository.deleteById(id);
     }
@@ -48,6 +49,7 @@ public class PersonServiceImpl implements PersonService {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     public List<PersonDTO> listItems() {
         return personRepository.findAll().stream().map(this::toDto).collect(Collectors.toList());
     }
@@ -56,6 +58,7 @@ public class PersonServiceImpl implements PersonService {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     public PersonDTO getOneItem(String id) {
         return personRepository.findById(id).map(this::toDto).orElse(null);
     }

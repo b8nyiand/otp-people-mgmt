@@ -61,4 +61,13 @@ public class AddressController {
         return ResponseEntity.ok(addressService.getOneItem(id));
     }
 
+    @Operation(summary = "Find Addresses by Person ID", description = "Retrieves a list of Addresses belonging to a specific Person.")
+    @GetMapping("/person/{personId}")
+    public ResponseEntity<List<AddressDTO>> getAddressesByPersonId(
+            @Parameter(description = "ID of the Person whose Addresses are to be retrieved", required = true)
+            @PathVariable String personId
+    ) {
+        return ResponseEntity.ok(addressService.findByPersonId(personId));
+    }
+
 }

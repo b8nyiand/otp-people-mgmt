@@ -36,4 +36,11 @@ public interface ContactService {
      */
     ContactDTO getOneItem(Long id);
 
+    /**
+     * Retrieves a list of Contacts for a specific Person by their ID.
+     * @param personId the ID of the Person whose Contacts are to be retrieved.
+     * @return a list of {@link ContactDTO} belonging to the specified Person.
+     */
+    List<ContactDTO> findByPersonId(String personId);
+
 }

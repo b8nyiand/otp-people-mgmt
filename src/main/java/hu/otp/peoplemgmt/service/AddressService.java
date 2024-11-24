@@ -36,4 +36,11 @@ public interface AddressService {
      */
     AddressDTO getOneItem(Long id);
 
+    /**
+     * Retrieves a list of Addresses for a specific Person by their ID.
+     * @param personId the ID of the Person whose Addresses are to be retrieved.
+     * @return a list of AddressDTO belonging to the specified Person.
+     */
+    List<AddressDTO> findByPersonId(String personId);
+
 }

@@ -52,6 +52,7 @@ public class ContactServiceImpl implements ContactService {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     public void delete(Long id) {
         contactRepository.deleteById(id);
     }
@@ -60,6 +61,7 @@ public class ContactServiceImpl implements ContactService {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     public List<ContactDTO> listItems() {
         return contactRepository.findAll().stream().map(this::toDto).collect(Collectors.toList());
     }
@@ -68,8 +70,21 @@ public class ContactServiceImpl implements ContactService {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     public ContactDTO getOneItem(Long id) {
         return contactRepository.findById(id).map(this::toDto).orElse(null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public List<ContactDTO> findByPersonId(String personId) {
+        return contactRepository.findByPersonContact_Id(personId)
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
     }
 
     /**
